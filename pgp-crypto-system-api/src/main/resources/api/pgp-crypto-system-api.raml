@@ -1,0 +1,49 @@
+#%RAML 1.0
+title: pgp-crypto-system-api
+
+version: v1
+
+
+/system:
+  /insert-records:
+    post:
+      description: Insert decrypted records into database
+      body:
+        application/json:
+          example: |
+            [
+              {
+                "employeeId": "E001",
+                "employeeName": "John Doe",
+                "department": "IT",
+                "salary": "75000"
+              }
+            ]
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "success",
+                  "insertedRecords": 1
+                }
+  
+  /send-notification:
+    post:
+      description: Send email notification
+      body:
+        application/json:
+          example: |
+            {
+              "message": "Processing completed",
+              "recordCount": 10
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "Email sent successfully"
+                }

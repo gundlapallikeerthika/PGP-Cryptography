@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="pgp-crypto-p-api-test-suite.xml" />
+	<munit:test name="pgp-crypto-p-api-test-suite-post:\encrypt-and-queue:application\json:pgp-crypto-p-api-configTest" doc:id="cf3354b8-a89e-4c6d-901f-de6d088017ec" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="73584316-b31d-4ea0-8c7a-8f3ff3400a4a" processor="crypto:pgp-encrypt">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Pgp encrypt" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f06e97f5-dcf5-4529-a24e-95183186553f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="32c81916-f5dd-4d29-8237-01e781be35b4" processor="jms:publish">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="Publish to ActiveMQ" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="d57cee8b-721c-4144-988f-86ee166f9a10" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="a26586e0-f50f-4b37-a99c-88cfc0110ff6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="originalContent" ><![CDATA["employeeId,employeeName,department,location
+707,Keerthika Gundlapalli,IT,Hyderabad
+100,Sindhu,HR,warangal
+605,Harshitha,Data Analyst,Dubai
+505,Pranavi,CEO,delhi
+808,Poojitha,Developer,kodad
+800,madhavi,student,singapor
+480,Akhil,Manager,Delhi
+680,pranav,seniorDevops,Bengaluru
+700,jhansi,intern,chevella
+707,Keerthika Gundlapalli,Senior IT Analyst,Bengaluru
+100,Sindhu Konda,HR Manager,Khammam
+605,Harshitha,Senior Data Analyst,Hyderabad
+670,reeshma,designer,nalgonda"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\encrypt-and-queue:application\json:pgp-crypto-p-api-config" doc:id="1439704c-c7c3-4bf8-9d58-c87add2a38aa" name="post:\encrypt-and-queue:application\json:pgp-crypto-p-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2b2d340b-b51c-4441-8ea5-78e4c2e85446" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<!-- [STUDIO:"pgp-crypto-p-api-test-suite-pgp-crypto-p-api-mainTest"]<munit:test name="pgp-crypto-p-api-test-suite-pgp-crypto-p-api-mainTest" doc:id="1d8735f9-54a0-4313-9ee8-63e68ea7ca4c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="4a7e9353-e2a3-4e55-96c8-423aa8d5f5e3" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-p-api-main" doc:id="4e8780b3-26f6-4635-aa5c-2046d24db4f3" name="pgp-crypto-p-api-main"/>
+		</munit:execution>
+	</munit:test> [STUDIO] -->
+	<munit:test name="pgp-crypto-p-api-test-suite-post:\decrypt-and-store:pgp-crypto-p-api-configTest" doc:id="9d6889eb-5567-402d-a42a-fc587bccefa1" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\decrypt-and-store:pgp-crypto-p-api-config" doc:id="670d8901-82fb-43a9-b2d5-f039c0d9a864" name="post:\decrypt-and-store:pgp-crypto-p-api-config"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

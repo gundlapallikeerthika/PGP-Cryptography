@@ -1,0 +1,27 @@
+
+
+http:
+  host: "localhost"
+  port: "8082"
+  timeout: "30000"
+
+
+db:
+  host: "localhost"
+  port: "1522"
+  user: "mulekeer"
+  password: "mule12"
+  serviceName: "XEPDB1"
+
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  user: "gundlapallikeerthika@gmail.com"
+  password: "cmjcrbhvnuukkzyq"
+
+
+
+    
+            
+
+   

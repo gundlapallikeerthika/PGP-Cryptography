@@ -1,0 +1,39 @@
+#%RAML 1.0
+title: pgp-crypto-process-api
+
+version: v1
+
+
+/process:
+  /encrypt-and-queue:
+    post:
+      description: Encrypt files and publish to ActiveMQ
+      body:
+        application/json:
+          example: |
+            {
+              "sourceDirectory": "C:/mulesoft/input",
+              "fileName": "employee-data.csv"
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "success",
+                  "message": "File encrypted and queued"
+                }
+  
+  /decrypt-and-store:
+    post:
+      description: Decrypt files and store in database
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "status": "success",
+                  "recordsInserted": 10
+                }

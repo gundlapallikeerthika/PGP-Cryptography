@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="impl-system-api-test-suite.xml" />
+	<munit:test name="impl-system-api-test-suite-insert-records-sub-flowTest" doc:id="c66a3049-7e12-47fd-b839-cced1776b02f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f8a77708-edc2-4bc5-8394-27cbc5e348e7" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b2c204a4-a023-4362-b9ac-5f4336f390b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="af20ce81-332f-42d5-aa46-2da6c09ebe8a" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;[ &#10;&#10;  { &#10;&#10;    "employeeId": "707", &#10;&#10;    "employeeName": "Keerthika Gundlapalli", &#10;&#10;    "department": "IT", &#10;&#10;    "location\r": "Hyderabad\r" &#10;&#10;  }&#10; ]]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to insert-records-sub-flow" doc:id="46b84411-2bab-48c6-9272-ad63db76f0b4" name="insert-records-sub-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e75c75fb-ef9f-49ee-b4eb-07f1063cbef9" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

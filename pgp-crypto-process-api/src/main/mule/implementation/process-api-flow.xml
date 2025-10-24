@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="a9421462-cb97-4677-817c-884bfce62a02" />
+	<file:config name="File_Config1" doc:name="File Config" doc:id="ed905c5e-3118-4fd5-a7a5-7dc8d8ba3f46" />
+	<sub-flow name="process-encrypt-and-queue-flow-sub-flow" doc:id="435f4f4f-5c98-4844-abed-02f1c81312e3" >
+		<logger level="INFO" doc:name="Log start" doc:id="f3f680ff-e06a-48eb-a14c-2aa787824d4c" message="Process API: Starting encryption process"/>
+		<file:read doc:name="Read CSV file" doc:id="40f1db06-4cf5-4267-8f5d-84e0ea6decf0" config-ref="File_Config" path="C:\Users\Keerthika\Downloads\employee-data.csv"/>
+		<logger level="INFO" doc:name="Log file read" doc:id="29a752ce-bde8-4b17-9ece-daa402fc8d9c" message="#[payload]"/>
+		<set-variable value="#[payload]" doc:name="Store Original Content" doc:id="fe7f07d1-8677-49a4-bad0-32dc1e17e524" variableName="originalContent"/>
+		<crypto:pgp-encrypt doc:name="Pgp encrypt" doc:id="f06e97f5-dcf5-4529-a24e-95183186553f" config-ref="Crypto_Pgp" keyId="enc" />
+		<logger level="INFO" doc:name="Log Encryption" doc:id="bf9276d6-5e3b-49c7-a71c-47c09e53ba47" message="Process API: File encrypted successfully"/>
+		<set-variable value="#[payload]" doc:name="Store Encrypted Content" doc:id="06e2479c-fc7e-427a-aaf5-1e4552bf5ad8" variableName="encryptedContent"/>
+		<jms:publish doc:name="Publish to ActiveMQ" doc:id="d57cee8b-721c-4144-988f-86ee166f9a10" config-ref="JMS_Config" destination="Encrypt">
+			<jms:message >
+				<jms:body ><![CDATA[#[vars.encryptedContent]]]></jms:body>
+			</jms:message>
+		</jms:publish>
+		<logger level="INFO" doc:name="Log Queue Publish" doc:id="aebac393-ba54-4e2c-ab3f-62a455c621dd" message="Process API: Encrypted file published to ActiveMQ queue"/>
+	</sub-flow>
+	<flow name="process-consume-and-decrypt-sub-flow" doc:id="24d00407-e11c-41cf-9eb8-368beb1d87d9" >
+		<jms:listener doc:name="On New Message" doc:id="ef3f2ed4-dd82-4414-aa7f-d343d4e46ee0" config-ref="JMS_Config" destination="Encrypt">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Log Message Consumed" doc:id="0661d5c6-722e-49ff-ab11-ede77d43bd78" message="Process API: Message consumed from ActiveMQ queue"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="edcf63ab-b738-4279-ac2a-3e61a0509986" variableName="encryptedPayload"/>
+		<file:write doc:name="Write" doc:id="aaf68e32-8630-48d3-b904-12e9f949f29b" config-ref="File_Config1" path="C:\Users\Keerthika\Downloads\dec_employee_data\emp_data_dec.txt"/>
+		<logger level="INFO" doc:name="Log Encrypted File Written" doc:id="bfa15e5c-f229-44fc-a510-6e50fad4c32e" message="Process API: Encrypted file written"/>
+		<set-payload value="#[vars.encryptedPayload]" doc:name="Store Encrypted Payload" doc:id="63607e82-af0b-45b1-b776-9a55be385eb9" />
+		<crypto:pgp-decrypt doc:name="Pgp decrypt" doc:id="929e8562-5b34-4b91-9887-8f9029af1e8e" config-ref="Crypto_Pgp1"/>
+		<logger level="INFO" doc:name="Logger Decrypted" doc:id="93f2ac7c-2e4c-49f9-baa5-e9d23841a47a" message="Process API: File decrypted successfully"/>
+		<set-variable value="#[payload]" doc:name="Store Decrypted Content" doc:id="22905942-dcee-4014-bce8-650522863580" variableName="decryptedContent"/>
+		<flow-ref doc:name="Flow Reference" doc:id="93848a60-9f1a-469e-b573-1d9c8db64be2" name="process-api-flowSub_Flow"/>
+		<error-handler ref="global-error-handlingError_Handler" />
+	</flow>
+	<sub-flow name="process-api-flowSub_Flow" doc:id="80023a92-e568-4279-8f04-5b15d7cacbbd" >
+		<logger level="INFO" doc:name="Logger" doc:id="3c83ae07-3001-4baa-ad1f-69bd11677ff5" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="60519b95-6b89-4ff1-8300-1b4d03eac91f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+import * from dw::core::Strings
+var lines = payload splitBy "\n"
+var headers = lines[0] splitBy ","
+var dataLines = lines[1 to -1]
+---
+dataLines map (line) -> 
+    (headers zip (line splitBy ",") map ((pair) -> {(pair[0]): pair[1]})) reduce ((item, acc={}) -> acc ++ item)
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="converted csv to json" doc:id="f05064ea-d98d-43b0-b74a-adbea7dd277a" message="#[payload]"/>
+		<http:request method="POST" doc:name="Call System API - Insert Records" doc:id="f10261ab-3e96-48ee-8755-c90f64b20163" url="http://localhost:8082/api/insert-records" responseTimeout="100000000"/>
+		<logger level="INFO" doc:name="Log Database Insert" doc:id="c5a15f6d-aaf5-4d4f-b98e-5df57f650214" message="Data got inserted in database"/>
+		<http:request method="POST" doc:name="Call System API - Email" doc:id="1bffb33c-cef0-4b54-bf76-6f2482321dd0" path="/api/send-notification" config-ref="HTTP_Request_configuration" responseTimeout="100000">
+			<http:body ><![CDATA[#[output application/json
+---
+{
+    message: "File processing completed successfully"
+    
+}]]]></http:body>
+		</http:request>
+		<logger level="INFO" doc:name="Log Email Sent" doc:id="eb6b054f-2772-4c02-a536-c1584a1066c1" message="Email notification sent successfully"/>
+	</sub-flow>
+</mule>

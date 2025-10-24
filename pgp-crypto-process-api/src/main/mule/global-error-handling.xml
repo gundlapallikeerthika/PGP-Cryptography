@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="global-error-handlingError_Handler" doc:id="0b2217ef-c51d-4fe5-ac86-8a42eba2b84f" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:BAD_REQUEST" doc:id="4d4cd3ff-13a3-4ad8-954e-1afec33d2d00" type="APIKIT:BAD_REQUEST" >
+			<ee:transform doc:name="Transform Message" doc:id="69757383-bacb-4a58-8518-a99b98d7e9bc" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:NOT_FOUND" doc:id="d7421075-4b6c-4add-ae3e-5defefabec8a" type="APIKIT:NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="3785d980-ec6e-437a-9989-5bda188689d8" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:METHOD_NOT_ALLOWED" doc:id="1fbbaf79-c1c9-46a5-8f20-2f73576cbb1b" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<ee:transform doc:name="Transform Message" doc:id="659cb2ae-615b-4e69-99f1-da15866f66e0" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="9add3178-71d5-4d5a-9c7a-89c511c1f624" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<ee:transform doc:name="Transform Message" doc:id="22c9c7d9-a482-403d-b668-04ec3b9cf1ee" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:NOT_IMPLEMENTED" doc:id="c866fd21-3e1a-478b-b928-8bbafd12e3a4" type="APIKIT:NOT_IMPLEMENTED" >
+			<ee:transform doc:name="Transform Message" doc:id="fc6fee26-c4fb-4904-9664-689f2f9b2047" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="CRYPTO:MISSING_KEY" doc:id="fb8f9fe6-15b5-47bf-9f9e-09417f8237c8" type="CRYPTO:MISSING_KEY" >
+			<ee:transform doc:name="Transform Message" doc:id="490f96ad-fc5a-400a-8afa-7cf6768f8ada" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "CRYPTO:MISSING_KEY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="CRYPTO:PASSPHRASE" doc:id="3b88d30c-52e4-4972-9836-a47329cc273c" type="CRYPTO:PASSPHRASE" >
+			<ee:transform doc:name="Transform Message" doc:id="ca4c31e3-3f59-4b1d-8ee8-88c0433e0ead" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "CRYPTO:PASSPHRASE",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:CONNECTIVITY" doc:id="c3153cae-6b64-43ee-9edb-a047e6bbdcf0" type="JMS:CONNECTIVITY" >
+			<ee:transform doc:name="Transform Message" doc:id="abda89ca-c5a2-496a-81e3-23be3c619523" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:CONNECTIVITY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:DESTINATION_NOT_FOUND" doc:id="6280848b-567b-4631-9fb1-ffb168e451ea" type="JMS:DESTINATION_NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="7d02026a-f3a5-4636-82ee-a7a24ff75cd6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:DESTINATION_NOT_FOUND",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:ILLEGAL_BODY" doc:id="cf9d20b5-96af-4f21-adb3-f375be331218" type="JMS:ILLEGAL_BODY" >
+			<ee:transform doc:name="Transform Message" doc:id="8b936c9c-2254-4e54-985d-ca61467b949b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:ILLEGAL_BODY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:PUBLISHING" doc:id="7f740c22-483b-4d34-af1a-98b91a880309" type="JMS:PUBLISHING" >
+			<ee:transform doc:name="Transform Message" doc:id="db8fe8a2-013a-4fcf-aedb-58e9d1bde3e6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:PUBLISHING",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:RETRY_EXHAUSTED" doc:id="acd74182-5830-4055-b992-d2311b8e68ee" type="JMS:RETRY_EXHAUSTED" >
+			<ee:transform doc:name="Transform Message" doc:id="fe5591a9-2851-4093-b166-1f96517d994e" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:RETRY_EXHAUSTED",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:SECURITY" doc:id="08b3af5b-52c9-41b6-963d-2ac225157af3" type="JMS:SECURITY" >
+			<ee:transform doc:name="Transform Message" doc:id="ad114142-57f3-431a-af41-295adf696882" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:SECURITY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:ACK" doc:id="a881be1d-1917-4dcd-a3a9-a61ee5b022a0" type="JMS:ACK" >
+			<ee:transform doc:name="Transform Message" doc:id="6d38e2af-b6aa-43d4-8ecc-8f1096165f20" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "JMS:ACK",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="ANY" doc:id="785b0846-0906-4e07-98f2-4bc463c91307" type="EXPRESSION" >
+			<ee:transform doc:name="Transform Message" doc:id="8000bc1f-50c2-4ea5-b06e-31fad7aea5af" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "any",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>

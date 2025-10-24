@@ -1,0 +1,14 @@
+employeeId,employeeName,department,location
+707,Keerthika Gundlapalli,IT,Hyderabad
+100,Sindhu,HR,warangal
+605,Harshitha,Data Analyst,Dubai
+505,Pranavi,CEO,delhi
+808,Poojitha,Developer,kodad
+800,madhavi,student,singapor
+480,Akhil,Manager,Delhi
+680,pranav,seniorDevops,Bengaluru
+700,jhansi,intern,chevella
+707,Keerthika Gundlapalli,Senior IT Analyst,Bengaluru
+100,Sindhu Konda,HR Manager,Khammam
+605,Harshitha,Senior Data Analyst,Hyderabad
+670,reeshma,designer,nalgonda

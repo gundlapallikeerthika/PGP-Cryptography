@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<crypto:pgp-config name="Crypto_Pgp" doc:name="Crypto Pgp" doc:id="eec7279f-1c32-4a60-809c-92396282b578" publicKeyring="C:\Users\Keerthika\Downloads\crypto\Keerthika_0xF037786A_public.gpg" >
+		<crypto:pgp-key-infos >
+			<crypto:pgp-asymmetric-key-info keyId="enc" fingerprint="51B8892A2E43F1F7A35594B58DD5513DF037786A" />
+		</crypto:pgp-key-infos>
+	</crypto:pgp-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="2563e6fb-2115-4c13-b82f-e690eed60551" >
+		<jms:active-mq-connection username="admin" password="admin" >
+			<jms:factory-configuration brokerUrl="tcp://localhost:61616" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<crypto:pgp-config name="Crypto_Pgp1" doc:name="Crypto Pgp" doc:id="a464375a-8dab-4a74-8e75-3572947793e7" privateKeyring="C:\Users\Keerthika\Downloads\crypto\Keerthika_0xF037786A_SECRET.gpg" >
+		<crypto:pgp-key-infos >
+			<crypto:pgp-asymmetric-key-info keyId="enc" fingerprint="51B8892A2E43F1F7A35594B58DD5513DF037786A" passphrase="Keerthika123" />
+		</crypto:pgp-key-infos>
+	</crypto:pgp-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b4951c5b-a2f4-4969-8220-b5f8787e01ae" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ea00d6fc-2f87-4b81-9ee3-d30f36f93b4c" >
+		<http:request-connection host="localhost" port="8082" />
+	</http:request-config>
+</mule>

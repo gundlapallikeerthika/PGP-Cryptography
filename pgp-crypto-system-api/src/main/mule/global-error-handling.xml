@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<error-handler name="global-error-handlingError_Handler" doc:id="9ad51bf5-95bc-47f5-af83-a2603b380bd8" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:BAD_REQUEST" doc:id="0eaae639-d8f0-491b-bd5e-6caec9dafebe" type="APIKIT:BAD_REQUEST" >
+			<ee:transform doc:name="Transform Message" doc:id="f5f6d0f0-76a3-4a6d-8de9-c05e5050128b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "APIKIT:BAD_REQUEST",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:NOT_FOUND" doc:id="4fdbcb6f-0e5e-471d-8cac-f57c7d650329" type="APIKIT:NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="0b122841-c3ba-4733-9d51-33732e1a2ae2" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "APIKIT:NOT_FOUND",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:METHOD_NOT_ALLOWED" doc:id="5dc9522d-a18c-4e2f-a3c5-439f953de219" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<ee:transform doc:name="Transform Message" doc:id="744f3e31-a643-422f-b31a-8d24ba2dcbfb" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "APIKIT:METHOD_NOT_ALLOWED",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="df545890-f2b1-4581-8793-1320539c3b3d" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<ee:transform doc:name="Transform Message" doc:id="6ec9fe5d-fb04-4c18-8152-ef4b550d394d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "APIKIT:UNSUPPORTED_MEDIA_TYPE",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="APIKIT:NOT_IMPLEMENTED" doc:id="48c1f329-4d00-405d-b73b-6336ee2b7ba9" type="APIKIT:NOT_IMPLEMENTED" >
+			<ee:transform doc:name="Transform Message" doc:id="d9aec17b-77e7-4431-b4ec-7bad1100180f" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "APIKIT:NOT_IMPLEMENTED",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="EMAIL:CONNECTIVITY" doc:id="2ce7426a-4b13-4630-aec0-f52cca86c30a" type="EMAIL:CONNECTIVITY">
+			<ee:transform doc:name="Transform Message" doc:id="356f6b49-9a3e-4d40-9940-4ad71484f489" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "EMAIL:CONNECTIVITY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="EMAIL:RETRY_EXHAUSTED" doc:id="a4746298-29f2-4cc5-b85f-9c93364a19bf" type="EMAIL:RETRY_EXHAUSTED">
+			<ee:transform doc:name="Transform Message" doc:id="0910acd2-b0bd-4fd4-a708-30395cfd8482" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "EMAIL:RETRY_EXHAUSTED",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<email:send doc:name="Send" doc:id="ba3be762-1b72-4662-82d9-d08842be89f9" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="Data Insertion">
+				<email:to-addresses >
+					<email:to-address value="keerthikanaidu18@gmail.com" />
+				</email:to-addresses>
+				<email:body >
+					<email:content ><![CDATA[#["Data Insertion got failed in database"]]]></email:content>
+				</email:body>
+			</email:send>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="EMAIL:SEND" doc:id="2b077b51-ea17-48cb-84a0-49e50874f691" type="EMAIL:SEND">
+			<ee:transform doc:name="Transform Message" doc:id="f6e8a3c0-ff9f-4042-95bf-dde658b7ae0d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "status": "error",
+  "errorType": "EMAIL:SEND",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="DB:BAD_SQL_SYNTAX" doc:id="e7d1a7c4-1c1f-4590-91bd-114db23be541" type="DB:BAD_SQL_SYNTAX">
+			<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="8bae4c76-9845-4c38-b14a-b62b8f1dc3bb" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "status": "error",
+  "errorType": "DB:BAD_SQL_SYNTAX",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+&#93;&#93;></ee:set-payload>
+				</ee:message>
+			</ee:transform> [STUDIO] -->
+			<email:send doc:name="Send" doc:id="d16c876b-c92a-4b75-a7f4-2a2c9b3c0c08" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="Data Insertion" >
+				<email:to-addresses >
+					<email:to-address value="keerthikanaidu18@gmail.com" />
+				</email:to-addresses>
+				<email:body >
+					<email:content ><![CDATA[#["Data Insertion got failed in database
+due to DB:BAD SQL SYNTAX ERROR"]]]></email:content>
+				</email:body>
+			</email:send>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="DB:CONNECTIVITY" doc:id="38d1985a-6cc1-415b-ad51-a9fbbc4c8316" type="DB:CONNECTIVITY">
+			<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="2b8dde9b-75c8-47fb-a1ee-0626c3f69716" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "status": "error",
+  "errorType": "DB:CONNECTIVITY",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+&#93;&#93;></ee:set-payload>
+				</ee:message>
+			</ee:transform> [STUDIO] -->
+			<email:send doc:name="Send" doc:id="95449581-06d7-4c5a-adac-4ef76a94b662" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="Data Insertion" >
+				<email:to-addresses >
+					<email:to-address value="keerthikanaidu18@gmail.com" />
+				</email:to-addresses>
+				<email:body >
+					<email:content ><![CDATA[#["Data Insertion got failed in database
+due to db:query execution"]]]></email:content>
+				</email:body>
+			</email:send>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="DB:QUERY_EXECUTION" doc:id="869928d0-fca6-4ea1-99b6-0c6ebb7b7ae6" type="DB:QUERY_EXECUTION">
+			<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="0cebd2b9-ac92-4efa-964e-dba44fb6d257" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "status": "error",
+  "errorType": "DB:QUERY_EXECUTION",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+&#93;&#93;></ee:set-payload>
+				</ee:message>
+			</ee:transform> [STUDIO] -->
+			<email:send doc:name="Send" doc:id="87590d20-4821-4dc5-9a03-5acac3afdddd" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="Data Insertion" >
+				<email:to-addresses >
+					<email:to-address value="keerthikanaidu18@gmail.com" />
+				</email:to-addresses>
+				<email:body >
+					<email:content ><![CDATA[#["Data Insertion got failed in database"]]]></email:content>
+				</email:body>
+			</email:send>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="DB:RETRY_EXHAUSTED" doc:id="4ba2e74a-6305-40d2-94f6-ef76362cb1c9" type="DB:RETRY_EXHAUSTED">
+			<!-- [STUDIO:"Transform Message"]<ee:transform doc:name="Transform Message" doc:id="8eef1dfa-422f-44a2-aef1-2330d3be1400" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "status": "error",
+  "errorType":"DB:RETRY_EXHAUSTED",
+  "errorMessage": error.detailedDescription default error.description default error.errorMessage,
+  "transactionId": correlationId,
+  "timeStamp": now() as DateTime
+}
+&#93;&#93;></ee:set-payload>
+				</ee:message>
+			</ee:transform> [STUDIO] -->
+			<email:send doc:name="Send" doc:id="a12f6bf7-8485-4a67-9faa-b13d9c924534" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="Data Insertion" >
+				<email:to-addresses >
+					<email:to-address value="keerthikanaidu18@gmail.com" />
+				</email:to-addresses>
+				<email:body >
+					<email:content ><![CDATA[#["Data Insertion got failed in database"]]]></email:content>
+				</email:body>
+			</email:send>
+		</on-error-propagate>
+	</error-handler>
+</mule>

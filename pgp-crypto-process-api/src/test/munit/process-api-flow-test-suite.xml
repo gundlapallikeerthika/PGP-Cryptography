@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="process-api-flow-test-suite.xml" />
+	<munit:test name="process-api-flow-test-suite-process-consume-and-decrypt-sub-flowTest" doc:id="967e9df1-fc5c-44c2-8a39-be1e6e3145f8" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ab329b35-3159-4ed1-9cec-bca5ff17af77" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call System API - Insert Records" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f10261ab-3e96-48ee-8755-c90f64b20163" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[MunitTools::getResourceAsString("sample_data/enc.txt")]' mediaType="application/csv" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c84ea469-3acc-4e70-848c-c678dd48b1e7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call System API - Email" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="1bffb33c-cef0-4b54-bf76-6f2482321dd0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[MunitTools::getResourceAsString("sample_data/enc.txt")]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0625a1d9-aa27-4292-863d-9b9de00b43f9" processor="crypto:pgp-decrypt">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="929e8562-5b34-4b91-9887-8f9029af1e8e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[MunitTools::getResourceAsString("sample_data/enc.txt")]' mediaType="text/plain" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="8836b499-e865-4bd3-88c2-7443560861cf" >
+				<munit:payload value='#[MunitTools::getResourceAsString("sample_data/enc.txt")]' mediaType="application/csv" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to process-consume-and-decrypt-sub-flow" doc:id="31c2e90a-4bef-4361-ae34-aba56c5d8404" name="process-consume-and-decrypt-sub-flow" />
+		</munit:execution>
+	</munit:test>
+	<!-- [STUDIO:"process-api-flow-test-suite-process-api-flowSub_FlowTest"]<munit:test name="process-api-flow-test-suite-process-api-flowSub_FlowTest" doc:id="1227f9ff-4159-40fe-a40d-f0d095629fb6" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0e4f42f9-3fe6-4f51-8119-512f567eba17" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call System API - Insert Records" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f10261ab-3e96-48ee-8755-c90f64b20163" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="4d30be0b-0638-4fce-9086-4a0b831ac5d2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call System API - Email" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="1bffb33c-cef0-4b54-bf76-6f2482321dd0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b852de6a-ad9b-4c54-b60d-171d01a5c8bb">
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;&#45;&#45;-&#10;[&#10;  {&#10;    "employeeId": "707",&#10;    "employeeName": "Keerthika Gundlapalli",&#10;    "department": "IT",&#10;    "location\r": "Hyderabad\r"&#10;  },&#10;  {&#10;    "employeeId": "100",&#10;    "employeeName": "Sindhu",&#10;    "department": "HR",&#10;    "location\r": "warangal\r"&#10;  },&#10;  {&#10;    "employeeId": "605",&#10;    "employeeName": "Harshitha",&#10;    "department": "Data Analyst",&#10;    "location\r": "Dubai\r"&#10;  },&#10;  {&#10;    "employeeId": "505",&#10;    "employeeName": "Pranavi",&#10;    "department": "CEO",&#10;    "location\r": "delhi\r"&#10;  },&#10;  {&#10;    "employeeId": "808",&#10;    "employeeName": "Poojitha",&#10;    "department": "Developer",&#10;    "location\r": "kodad\r"&#10;  },&#10;  {&#10;    "employeeId": "800",&#10;    "employeeName": "madhavi",&#10;    "department": "student",&#10;    "location\r": "singapor\r"&#10;  },&#10;  {&#10;    "employeeId": "480",&#10;    "employeeName": "Akhil",&#10;    "department": "Manager",&#10;    "location\r": "Delhi\r"&#10;  },&#10;  {&#10;    "employeeId": "680",&#10;    "employeeName": "pranav",&#10;    "department": "seniorDevops",&#10;    "location\r": "Bengaluru\r"&#10;  },&#10;  {&#10;    "employeeId": "700",&#10;    "employeeName": "jhansi",&#10;    "department": "intern",&#10;    "location\r": "chevella\r"&#10;  },&#10;  {&#10;    "employeeId": "707",&#10;    "employeeName": "Keerthika Gundlapalli",&#10;    "department": "Senior IT Analyst",&#10;    "location\r": "Bengaluru\r"&#10;  },&#10;  {&#10;    "employeeId": "100",&#10;    "employeeName": "Sindhu Konda",&#10;    "department": "HR Manager",&#10;    "location\r": "Khammam\r"&#10;  },&#10;  {&#10;    "employeeId": "605",&#10;    "employeeName": "Harshitha",&#10;    "department": "Senior Data Analyst",&#10;    "location\r": "Hyderabad\r"&#10;  },&#10;  {&#10;    "employeeId": "670",&#10;    "employeeName": "reeshma",&#10;    "department": "designer",&#10;    "location\r": "nalgonda"&#10;  }&#10;&#93;&#93;' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to process-api-flowSub_Flow" doc:id="b7d5468d-a4cd-41bf-a841-2116624bf8c5" name="process-api-flowSub_Flow"/>
+		</munit:execution>
+	</munit:test> [STUDIO] -->
+	<munit:test name="APIKIT:BAD_REQUEST" doc:id="cd9c9ca9-6054-4fb6-8911-24a2e3a19690" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ae1fc05c-bbfd-4930-89b5-e13b0841a672" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="085da717-379c-46c5-9afd-f2320b36c1dc" name="pgp-crypto-p-api-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:NOT_FOUND" doc:id="5c750b44-8921-469e-ab2b-88d352507fe5" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:NOT_FOUND" doc:id="767fa5e4-fd74-4c36-b89d-c13af0c9b679" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="3d8f7c6b-515f-41a4-a322-88bd67132dae" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:METHOD_NOT_ALLOWED" doc:id="833b5368-2d7a-4d52-9ecd-fbc527085389" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:METHOD_NOT_ALLOWED" doc:id="901572e5-6558-46a7-8676-0fa7e7824c94" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="f5c159f1-b9de-4974-bba9-d65d84c7af8c" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="37d198bd-572e-43bd-8106-2b5df8f925b3" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="90cbac16-16c5-4fe9-98b1-f115154da578" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="c5b02349-40b2-43c3-9e35-49ded14158a7" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:NOT_IMPLEMENTED" doc:id="76e5b822-4bd8-4740-8f1a-995e67d09a85" description="Test" expectedErrorType="APIKIT:NOT_IMPLEMENTED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:NOT_IMPLEMENTED" doc:id="f4b09eec-69f1-4a4b-bd83-7df16d790d0f" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="8f61090b-86d4-44e2-be20-750736053a0d" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="CRYPTO:MISSING_KEY" doc:id="fb87c06c-bf2b-407d-9418-542582fd391a" description="Test" expectedErrorType="CRYPTO:MISSING_KEY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="CRYPTO:MISSING_KEY" doc:id="00e8d62d-98f2-490b-8fa8-4679dbe3e839" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CRYPTO:MISSING_KEY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="f6980916-3e30-49e7-aa4b-32f5c4d2945e" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="CRYPTO:PASSPHRASE" doc:id="f79dc1fd-aa3e-4e8c-b796-ee6b0404b545" description="Test" expectedErrorType="CRYPTO:PASSPHRASE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="CRYPTO:PASSPHRASE" doc:id="4bed6cce-0a6d-4ecc-82af-73fe893e5a86" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CRYPTO:PASSPHRASE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="36514bc4-f2d2-4ea0-be3e-ed01eefaaae2" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:CONNECTIVITY" doc:id="093a1a99-d172-4cee-adc7-150b126ea3e0" description="Test" expectedErrorType="JMS:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0650134a-5771-4fa5-b9d8-c2f85d155494" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="5a1313a1-2e50-4d7d-bb73-7a47a80389d0" name="pgp-crypto-p-api-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:DESTINATION_NOT_FOUND" doc:id="f9c8f1c1-295e-425d-b77a-5ccb616527ff" description="Test" expectedErrorType="JMS:DESTINATION_NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="05e34b91-75dd-440b-8398-49858d4c49b9" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:DESTINATION_NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="8566c43b-568e-49d9-a6c4-4b9f80f0dbde" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:PUBLISHING" doc:id="890f5b0f-0538-4b47-b0ac-6a3a8e4a79b1" description="Test" expectedErrorType="JMS:PUBLISHING">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="80d22a55-2919-440e-aa9f-10b5acbf630e" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:ILLEGAL_BODY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="daf21dc7-3f3f-466c-abf1-e8deb35ba87b" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:RETRY_EXHAUSTED" doc:id="6bc6fe45-8cd4-4e54-afad-e7d92da16a67" description="Test" expectedErrorType="JMS:RETRY_EXHAUSTED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="JMS:RETRY_EXHAUSTED" doc:id="d82c6141-5fdf-492e-9fac-145b099451e2" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="b92eedec-29da-46cc-845d-ec03300cbe93" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:SECURITY" doc:id="0dc0e30a-5f0a-42c1-8db9-7b8ec70bbbf1" description="Test" expectedErrorType="JMS:SECURITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="JMS:SECURITY" doc:id="d95b3166-ac1a-477f-bdda-cb5a3046d36f" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:SECURITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="23f63a76-a707-400c-a3c2-5d8990b282c7" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="JMS:ILLEGAL_BODY" doc:id="a1d52cbd-b3d8-46dc-a154-f118dcd00b6b" description="Test" expectedErrorType="JMS:ILLEGAL_BODY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="JMS:SECURITY" doc:id="862d2fb3-58ad-4cfd-8100-559ef62df4f5" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-p-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="JMS:ILLEGAL_BODY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="pgp-crypto-p-api-main" doc:id="a28d1fbb-dcea-4507-b141-581784903ab1" name="pgp-crypto-p-api-main" />
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="pgp-crypto-s-api-test-suite.xml" />
+	<munit:test name="pgp-crypto-s-api-test-suite-post:\insert-records:application\json:pgp-crypto-s-api-configTest" doc:id="b7243571-7b8b-4060-a8dd-d2aafc7ebcae" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="542a989d-06a1-450c-a251-98a7c82084a5" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="47d4c9da-57d4-4d54-a3d8-5014b016aaff" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;[{"RECORD_COUNT":1}]]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<!-- [STUDIO:"Mock when"]<munit-tools:mock-when doc:name="Mock when" doc:id="2bc3cada-643a-45e4-9c98-3e402bd2fe79" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ca116c63-a371-4bf8-8ee8-331de450d410" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0 &#10;output application/java&#10;&#45;&#45;-&#10;{&#10;    "employeeId": "680",&#10;    "employeeName": "pranav",&#10;    "department": "seniorDevops",&#10;    "location\r": "Bengaluru\r"&#10;  }&#93;' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when> [STUDIO] -->
+			<!-- [STUDIO:"Mock when"]<munit-tools:mock-when doc:name="Mock when" doc:id="119964d0-4979-4b27-86cf-6c5449364e28" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="b2c204a4-a023-4362-b9ac-5f4336f390b1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0 &#10;output application/java&#10;&#45;&#45;-&#10;{&#10;    "employeeId": "680",&#10;    "employeeName": "pranav",&#10;    "department": "seniorDevops",&#10;    "location\r": "Bengaluru\r"&#10;  }&#93;' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when> [STUDIO] -->
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="627c874b-0b30-427b-8218-02d02f23299f" >
+				<munit:payload value='#[%dw 2.0&#10;output application/json&#10;---&#10;&#10;[ &#10;&#10;  { &#10;&#10;    "employeeId": "707", &#10;&#10;    "employeeName": "Keerthika Gundlapalli", &#10;&#10;    "department": "IT", &#10;&#10;    "location\r": "Hyderabad\r" &#10;&#10;  }&#10; ]]' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\insert-records:application\json:pgp-crypto-s-api-config" doc:id="5bc7bba1-9088-4cd8-a956-b78f70193057" name="post:\insert-records:application\json:pgp-crypto-s-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f34b18de-4b0a-454f-8792-ff6053308ceb" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="APIKIT:BAD_REQUEST" doc:id="9eccc7d2-73bc-43f0-8592-7232f5f8ff54" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:BAD_REQUEST" doc:id="dd883118-7979-4c8b-ba8e-4cee88467c3a" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="a5b87bd1-8bae-4859-81ce-7f43958ae1a9" name="pgp-crypto-s-api-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:NOT_FOUND" doc:id="78d622f4-fbb3-462e-a970-2b73851ef549" description="Test" expectedErrorType="APIKIT:NOT_FOUND" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:NOT_FOUND" doc:id="45b5b6ea-00c4-40e6-aa06-a8d18c55af8c" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="70c53839-4aba-4a16-bc94-ff1a364bc314" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:METHOD_NOT_ALLOWED" doc:id="a0878af5-17a8-4f07-8502-4a88a6aaf4c8" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:METHOD_NOT_ALLOWED" doc:id="5f68b2ed-c00c-4e52-a03b-f50711f45eb7" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="1a430d21-24f9-4de2-8f1a-be287929daf9" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="ed53f8bf-8b25-45dd-a838-948f7234336b" description="Test" expectedErrorType="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="3de85029-7916-499f-bb9e-fc4dcf82e6f9" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="4ddf8e7f-86ef-4c84-8fd8-1a246d70b849" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="APIKIT:NOT_IMPLEMENTED" doc:id="1e611a31-254d-40dc-85b9-dcd3c0f07aaa" description="Test" expectedErrorType="APIKIT:NOT_IMPLEMENTED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="APIKIT:NOT_IMPLEMENTED" doc:id="2a13fa68-ef7b-4a0b-8795-389815888b58" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="0ce60347-7cf1-4806-89a3-68edc5ff82aa" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="EMAIL:CONNECTIVITY" doc:id="f8f87dc8-69d0-412e-b68d-658c0a4002c6" description="Test" expectedErrorType="EMAIL:CONNECTIVITY" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="EMAIL:CONNECTIVITY" doc:id="fcf139c6-5c29-4b12-96a6-af814ff532e3" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="EMAIL:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="d9a30df3-7a34-4f8b-aa1f-5072babb3e8e" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="EMAIL:RETRY_EXHAUSTED" doc:id="f37293ef-acfe-4630-8098-f53f6d742c1a" description="Test" expectedErrorType="EMAIL:RETRY_EXHAUSTED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="EMAIL:RETRY_EXHAUSTED" doc:id="f92b4ddf-f8ae-44ce-8a19-637b81fbdcdf" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="EMAIL:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="d3583715-e54a-43be-a3be-65ec94e1d9a3" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="EMAIL:SEND" doc:id="24cf9488-b9be-4d30-be14-7bd465bcb28a" description="Test" expectedErrorType="EMAIL:SEND" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="EMAIL:SEND" doc:id="a3774511-d07f-4b75-b111-555f0e216d3c" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="EMAIL:SEND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="6157cfe1-d9ca-4192-8c70-ca21446677fb" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="DB:BAD_SQL_SYNTAX" doc:id="1685992a-58c3-4ba7-9a23-3611a55a7817" description="Test" expectedErrorType="DB:BAD_SQL_SYNTAX" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="DB:BAD_SQL_SYNTAX" doc:id="e2fec736-f096-4fed-856b-8061bd2c6d45" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:BAD_SQL_SYNTAX" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="e4080d21-1e5b-4e0f-9c05-526dd47be0cb" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="DB:CONNECTIVITY" doc:id="06887d73-cf7a-44fc-9a95-7cc0c9a71a1b" description="Test" expectedErrorType="DB:CONNECTIVITY" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="DB:CONNECTIVITY" doc:id="30b980fb-fbb8-403e-a26a-0aed351cbba0" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="c739552e-0371-45db-816c-45b13d5a4fb4" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="DB:QUERY_EXECUTION" doc:id="8b65fe5a-1e80-4766-a5c7-320edbf59b05" description="Test" expectedErrorType="DB:QUERY_EXECUTION" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="DB:QUERY_EXECUTION" doc:id="4c2ac79e-8e4b-4977-a558-1acbb59d6098" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:QUERY_EXECUTION" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="f5268ce3-c956-4e0a-b5c7-0657c5b41c17" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="DB:RETRY_EXHAUSTED" doc:id="71339bd0-776c-4a69-be42-07d12f77db4c" description="Test" expectedErrorType="DB:RETRY_EXHAUSTED" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="DB:RETRY_EXHAUSTED" doc:id="c44c3dec-217d-49b1-bec2-0e8c5656da03" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="pgp-crypto-s-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to pgp-crypto-s-api-main" doc:id="b813af45-d26a-4bbb-8349-72ddb3d8fb4c" name="pgp-crypto-s-api-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="pgp-crypto-s-api-test-suite-post:\send-notification:application\json:pgp-crypto-s-api-configTest" doc:id="b13bf85f-9acb-48c1-99aa-6946a5747629" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="48dbad31-0a32-4ead-9971-c379cfd09458" processor="email:send">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Send" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="15a794c8-1104-4c7d-b7b6-b029e0d884c6" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#["Email sent successfully"]' mediaType="text/plain" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="28b71cf4-7c1e-424d-8f7c-891dd4e7cc9e" >
+				<munit:payload value='#["Email sent successfully"]' mediaType="text/plain" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\send-notification:application\json:pgp-crypto-s-api-config" doc:id="3485617d-8cdd-444a-8569-2849c328f058" name="post:\send-notification:application\json:pgp-crypto-s-api-config"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="pgp-crypto-p-api-config" api="resource::07dfe689-07a4-495f-abd4-970b9770dd7d:pgp-crypto-p-api:1.0.0:raml:zip:pgp-crypto-p-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<flow name="pgp-crypto-p-api-main" doc:id="544737ee-f1e1-4708-9c6d-242e1e9ccd55">
+        <http:listener path="/api/*" config-ref="HTTP_Listener_config">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="pgp-crypto-p-api-config" />
+		<error-handler ref="global-error-handlingError_Handler" />
+    </flow>
+    <!-- [STUDIO:"pgp-crypto-p-api-console"]<flow name="pgp-crypto-p-api-console">
+        <http:listener config-ref="pgp-crypto-p-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:body>#[payload&#93;</http:body>
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="pgp-crypto-p-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{message: "Resource not found"}&#93;&#93;></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> [STUDIO] -->
+    <flow name="post:\decrypt-and-store:pgp-crypto-p-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "success",
+  recordsInserted: 10
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler ref="global-error-handlingError_Handler" />
+    </flow>
+    <flow name="post:\encrypt-and-queue:application\json:pgp-crypto-p-api-config">
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "success",
+  message: "File encrypted and queued"
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="eb141da2-92ac-48d6-89ef-ee8ff2f38263" name="process-encrypt-and-queue-flow-sub-flow"/>
+		<error-handler ref="global-error-handlingError_Handler" />
+    </flow>
+</mule>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="f8978695-61d3-41e9-92ab-26b30ca93ee4" >
+		<db:oracle-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" serviceName="${db.serviceName}" />
+	</db:config>
+	<sub-flow name="insert-records-sub-flow" doc:id="ffdcecd8-0783-40c0-b558-d8cfa47032c6" >
+		<logger level="INFO" doc:name="Log start" doc:id="f76cac29-f5e7-422f-b5f0-7620c2178adc" message="#[payload]" />
+		<foreach doc:name="For Each" doc:id="8cf1f802-c9f1-4a39-b700-4cece296d872" collection="#[payload]">
+			<logger level="INFO" doc:name="Logger" doc:id="7006cef7-76d9-4ef6-92f7-d059b8b13be3" message="#[payload]" />
+			<set-variable value="#[payload]" doc:name="store currect record" doc:id="81ed2ae7-07e3-46a5-a14c-942d7b9380f4" variableName="currentRecord" />
+			<db:select doc:name="Select" doc:id="47d4c9da-57d4-4d54-a3d8-5014b016aaff" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT COUNT(*) AS record_count 
+          FROM employeedetails 
+          WHERE EMPLOYEEID = :employeeId
+          
+  		]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+          employeeId: vars.currentRecord.employeeId as Number
+ }]]]></db:input-parameters>
+		</db:select>
+			<logger level="INFO" doc:name="Logger" doc:id="546dbe15-da4b-4127-b0e7-8ef62780a12b" message="Record count: #[payload[0].RECORD_COUNT]"/>
+			<choice doc:name="Choice" doc:id="4b3e8cf9-aba0-4aaf-8f23-27cd9c19e71b" >
+				<when expression="#[payload[0].RECORD_COUNT &gt; 0]">
+					<logger level="INFO" doc:name="Log update" doc:id="d559876b-5aa7-42a5-b7df-8099095f49d3" message="Record is exists should Update"/>
+					<db:update doc:name="Update" doc:id="ca116c63-a371-4bf8-8ee8-331de450d410" config-ref="Database_Config">
+						<db:sql ><![CDATA[UPDATE employeedetails 
+SET EMPLOYEEENAME = :EMPLOYEEENAME, 
+    DEPARTMENT = :DEPARTMENT, 
+    LOCATION = :LOCATION
+WHERE EMPLOYEEID = :EMPLOYEEID
+]]></db:sql>
+						<db:input-parameters ><![CDATA[#[{
+  EMPLOYEEID: vars.currentRecord.employeeId as Number,
+  EMPLOYEEENAME: vars.currentRecord.employeeName,
+  DEPARTMENT : vars.currentRecord.department,
+  LOCATION: (
+    ((vars.currentRecord.location default vars.currentRecord.'location\r') default "") 
+    as String 
+    replace("\r") with ("")
+    replace("\n") with ("")
+  
+  )
+}]]]></db:input-parameters>
+					</db:update>
+					<logger level="INFO" doc:name="Log Updated successfully" doc:id="73fe2c64-8d9b-4580-8eb8-344f50e27ded" message="Record updated successfully"/>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Log insert" doc:id="679c7524-4692-449a-947a-f155c7dc37ab" message="Record does not exist should insert "/>
+					<db:insert doc:name="Insert" doc:id="b2c204a4-a023-4362-b9ac-5f4336f390b1" config-ref="Database_Config">
+				<db:sql><![CDATA[INSERT INTO employeedetails (EMPLOYEEID, EMPLOYEEENAME, DEPARTMENT, LOCATION)
+VALUES (:EMPLOYEEID, :EMPLOYEEENAME, :DEPARTMENT, :LOCATION)
+]]></db:sql>
+				<db:input-parameters><![CDATA[#[{
+  EMPLOYEEID: vars.currentRecord.employeeId as Number,
+  EMPLOYEEENAME: vars.currentRecord.employeeName,
+  DEPARTMENT : vars.currentRecord.department,
+  LOCATION: (
+    ((vars.currentRecord.location default vars.currentRecord.'location\r') default "") 
+    as String 
+    replace("\r") with ("")
+    replace("\n") with ("")
+  
+  )
+}]]]></db:input-parameters>
+			</db:insert>
+					<logger level="INFO" doc:name="Inserted Successfully" doc:id="c828a364-0768-4bf5-913a-2660fee434c2" message="Records Inserted Successfully"/>
+				</otherwise>
+			</choice>
+			<logger level="INFO" doc:name="Log record" doc:id="a7541cb2-f798-44a4-9226-fbe6e1ceff57" message="#[payload]"/>
+			<logger level="INFO" doc:name="Records inserted Successfully" doc:id="59d484b3-6ff5-484c-9927-1017c14bdf31" message="All records inserted successfully"/>
+		</foreach>
+	</sub-flow>
+	<sub-flow name="send-notification-sub-flow" doc:id="847bb515-546c-4a82-b072-b3dc738960dc" >
+		<logger level="INFO" doc:name="Log start" doc:id="2035cb89-1511-4907-afdd-1c94d326e30e" message="System API: Sending email notification" />
+		<email:send doc:name="Send" doc:id="15a794c8-1104-4c7d-b7b6-b029e0d884c6" config-ref="Email_SMTP" fromAddress="gundlapallikeerthika@gmail.com" subject="PGP File Processing Completed">
+			<email:to-addresses >
+				<email:to-address value="keerthikanaidu18@gmail.com" />
+			</email:to-addresses>
+			<email:body contentType="text/plain" encoding="UTF-8">
+				<email:content ><![CDATA[#["Employee details got inserted successfully"]]]></email:content>
+			</email:body>
+		</email:send>
+		<logger level="INFO" doc:name="Log Email Sent" doc:id="8b6f4b6c-88eb-4e04-b08e-36a514ff9aa2" message="Email notification sent successfully"/>
+	</sub-flow>
+</mule>
